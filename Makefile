@@ -22,21 +22,19 @@ DEBOOTSTRAP_MIRROR  ?= http://deb.debian.org/debian
 MKIMAGE = /usr/share/docker.io/contrib/mkimage.sh
 
 default:
-	echo;\
+	@echo;\
 	echo ERROR: no target specified, try make image;\
 	echo;\
 	exit 1
 
 builddir:
-	if [ -e build ]; then\
-	  echo;\
-	  echo ERROR: build directory already exists, run make clean;\
-	  echo;\
-	  exit 1;\
+	@if [ -e build ]; then\
+	  echo 'WARNING: build directory already exists (run make clean)';\
 	fi
-	mkdir build
+	mkdir -p build
 
-image: builddir
+# Create rootfs.tar.xz
+image-rootfs: builddir
 	sudo $(MKIMAGE) --dir build --compression xz \
 	  debootstrap "--variant=$(DEBOOTSTRAP_VARIANT)" \
 	  --components=main \
@@ -44,6 +42,17 @@ image: builddir
 	  --force-check-gpg \
 	  "$(DIST)" \
 	  "$(DEBOOTSTRAP_MIRROR)"
+	# Perms
+	sudo chown -Rc "$(USER)" build
+
+# Create Dockerfile and required files
+image-dockerfile: builddir
+	@diff -u build/Dockerfile templates/Dockerfile ||:
+	cp -a templates/Dockerfile build/Dockerfile
+	# resolv.conf
+	grep ^nameserver /etc/resolv.conf > build/resolv.conf
+
+image: image-rootfs image-dockerfile
 
 clean:
 	rm -rf build
