@@ -17,6 +17,8 @@
 DIST                ?= jessie
 DEBOOTSTRAP_VARIANT ?= minbase
 DEBOOTSTRAP_MIRROR  ?= http://deb.debian.org/debian
+DOCKER_USER         ?= nantesmetropole
+DOCKER_TAG          ?= $(DOCKER_USER)/$(DIST)
 
 
 MKIMAGE = /usr/share/docker.io/contrib/mkimage.sh
@@ -53,6 +55,7 @@ image-dockerfile: builddir
 	grep ^nameserver /etc/resolv.conf > build/resolv.conf
 
 image: image-rootfs image-dockerfile
+	docker build -t "$(DOCKER_TAG)" build
 
 clean:
 	rm -rf build
