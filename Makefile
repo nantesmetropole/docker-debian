@@ -59,5 +59,8 @@ image-dockerfile: builddir
 image: image-rootfs image-dockerfile
 	docker build -t "$(DOCKER_TAG)" build
 
+test:
+	./test.sh
+
 clean:
 	rm -rf build
