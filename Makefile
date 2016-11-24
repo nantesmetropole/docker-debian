@@ -18,7 +18,7 @@ DIST                ?= jessie
 DEBOOTSTRAP_VARIANT ?= minbase
 DEBOOTSTRAP_MIRROR  ?= http://deb.debian.org/debian
 DOCKER_USER         ?= nantesmetropole
-DOCKER_TAG          ?= $(DOCKER_USER)/$(DIST)
+DOCKER_TAG          ?= $(DOCKER_USER)/debian:$(DIST)
 
 
 MKIMAGE = /usr/share/docker.io/contrib/mkimage.sh
