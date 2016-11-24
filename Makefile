@@ -37,6 +37,8 @@ builddir:
 
 # Create rootfs.tar.xz
 image-rootfs: builddir
+	mkdir build/rootfs
+	cp -a templates/etc build/rootfs/
 	sudo $(MKIMAGE) --dir build --compression xz \
 	  debootstrap "--variant=$(DEBOOTSTRAP_VARIANT)" \
 	  --components=main \
