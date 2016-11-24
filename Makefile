@@ -39,6 +39,7 @@ builddir:
 image-rootfs: builddir
 	mkdir build/rootfs
 	cp -a templates/etc build/rootfs/
+	sudo chown -Rc root:root build/rootfs/etc
 	sudo $(MKIMAGE) --dir build --compression xz \
 	  debootstrap "--variant=$(DEBOOTSTRAP_VARIANT)" \
 	  --components=main \
@@ -46,15 +47,14 @@ image-rootfs: builddir
 	  --force-check-gpg \
 	  "$(DIST)" \
 	  "$(DEBOOTSTRAP_MIRROR)"
-	# Perms
-	sudo chown -Rc "$(USER)" build
 
 # Create Dockerfile and required files
 image-dockerfile: builddir
 	@diff -u build/Dockerfile templates/Dockerfile ||:
+	rm -f build/Dockerfile
 	cp -a templates/Dockerfile build/Dockerfile
 	# resolv.conf
-	grep ^nameserver /etc/resolv.conf > build/resolv.conf
+	grep ^nameserver /etc/resolv.conf | tee build/resolv.conf
 
 image: image-rootfs image-dockerfile
 	docker build -t "$(DOCKER_TAG)" build
