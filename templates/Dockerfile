@@ -7,13 +7,17 @@ COPY resolv.conf /etc
 
 RUN apt-get update && apt-get install -y \
     locales \
-    vim \
-    && \
-    echo 'locales locales/default_environment_locale string fr_FR.UTF-8' | debconf-set-selections \
-    && \
+    vim && \
+    \
+    for locale in 'fr_FR.UTF-8 UTF-8'; do \
+      sed -i -e "0,/^[# ]*$locale *$/ s/^[# ]*$locale *$/$locale/" /etc/locale.gen; \
+    done && \
+    locale-gen && \
+    update-locale LANG=fr_FR.UTF-8 && \
+    \
     ln -nsf /usr/share/zoneinfo/Europe/Paris /etc/localtime && \
-    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata \
-    && \
+    DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata && \
+    \
     rm -rf /var/lib/apt/lists/*
 
 CMD ["/bin/bash"]
