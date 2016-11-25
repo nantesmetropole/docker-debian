@@ -36,8 +36,6 @@ test_tz() {
 }
 
 test_lang() {
-    . /etc/default/locale
-    export LANG
     local output="$(ls nonexisting 2>&1 | grep -c 'Aucun fichier ou dossier de ce type')"
     assert_equal "$output" '1' 'french'
 }
