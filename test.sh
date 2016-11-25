@@ -36,8 +36,10 @@ test_tz() {
 }
 
 test_lang() {
-    local output="$(ls /nowhere 2>&1)"
-    assert_equal "$output" "ls: impossible d'accéder à '/nowhere': Aucun fichier ou dossier de ce type" 'ls output'
+    . /etc/default/locale
+    export LANG
+    local output="$(ls nonexisting 2>&1 | grep -c 'Aucun fichier ou dossier de ce type')"
+    assert_equal "$output" '1' 'french'
 }
 
 # =================================================================
