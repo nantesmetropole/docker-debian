@@ -20,6 +20,9 @@ RUN echo ">>>> Removing files" && \
           /usr/share/pyshared/twisted/*/test* \
           /usr/lib/python*/dist-packages/twisted/*/test* &&
     \
+    echo ">>>> Removing init system" && \
+    dpkg --force-remove-essential -r init systemd systemd-sysv sysvinit-core upstart udev && \
+    \
     echo ">>>> Configuring locales" && \
     apt-get update && apt-get install -y \
     locales && \
