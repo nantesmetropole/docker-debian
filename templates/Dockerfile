@@ -5,7 +5,21 @@ LABEL vendor="Nantes Métropole"
 ADD rootfs.tar.xz /
 COPY resolv.conf /etc
 
-RUN apt-get update && apt-get install -y \
+
+# NB: We need to re-do dpkg.cfg's path-exlude as debootstrap doesn't apply it
+RUN find /usr/share/doc/*    -mindepth 1 -not -name copyright -delete && \
+    find /usr/share/locale/* -mindepth 1 -not -name "fr*" -not -name locale.alias -delete 2>/dev/null && \
+    rm -r /usr/share/man/* \
+          /usr/share/groff/* \
+          /usr/share/info/* \
+          /usr/share/lintian/* \
+          /usr/share/linda/* \
+          /usr/share/pyshared/twisted/test* \
+          /usr/lib/python*/dist-packages/twisted/test* \
+          /usr/share/pyshared/twisted/*/test* \
+          /usr/lib/python*/dist-packages/twisted/*/test* &&
+    \
+    apt-get update && apt-get install -y \
     locales \
     vim && \
     \
