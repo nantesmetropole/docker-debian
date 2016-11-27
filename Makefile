@@ -59,8 +59,11 @@ image-dockerfile: builddir
 image: image-rootfs image-dockerfile
 	docker build -t "$(DOCKER_TAG)" build
 
-test:
+test-local:
 	./test.sh
+
+test:
+	docker run -t -v "$(CURDIR):$(CURDIR)" -w "$(CURDIR)" "$(DOCKER_TAG)" ./test.sh
 
 clean:
 	rm -rf build
