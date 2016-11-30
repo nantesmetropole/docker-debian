@@ -10,17 +10,17 @@ COPY resolv.conf /etc
 RUN echo ">>>> Removing files" && \
     find /usr/share/doc/*    -mindepth 1 -not -name copyright -delete && \
     find /usr/share/locale/* -not -path "/usr/share/locale/fr*" -not -path "/usr/share/locale/locale.alias" -delete && \
-    rm -r /usr/share/man/* \
-          /usr/share/groff/* \
-          /usr/share/info/* \
-          /usr/share/lintian/* \
-          /usr/share/linda/* \
-          /usr/share/pyshared/twisted/test* \
-          /usr/lib/python*/dist-packages/twisted/test* \
-          /usr/share/pyshared/twisted/*/test* \
-          /usr/lib/python*/dist-packages/twisted/*/test* \
-          \
-          /lib/udev/hwdb.bin && \
+    rm -rf /usr/share/man/* \
+           /usr/share/groff/* \
+           /usr/share/info/* \
+           /usr/share/lintian/* \
+           /usr/share/linda/* \
+           /usr/share/pyshared/twisted/test* \
+           /usr/lib/python*/dist-packages/twisted/test* \
+           /usr/share/pyshared/twisted/*/test* \
+           /usr/lib/python*/dist-packages/twisted/*/test* \
+           \
+           /lib/udev/hwdb.bin && \
     \
     echo ">>>> Removing init system" && \
     dpkg --force-remove-essential -r init systemd systemd-sysv sysvinit-core upstart udev && \
