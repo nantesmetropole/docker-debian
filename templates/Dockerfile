@@ -9,7 +9,7 @@ COPY resolv.conf /etc
 # NB: We need to re-do dpkg.cfg's path-exlude as debootstrap doesn't apply it
 RUN echo ">>>> Removing files" && \
     find /usr/share/doc/*    -mindepth 1 -not -name copyright -delete && \
-    find /usr/share/locale/* -mindepth 1 -not -name "fr*" -not -name locale.alias -delete 2>/dev/null && \
+    find /usr/share/locale/* -not -path "/usr/share/locale/fr*" -not -path "/usr/share/locale/locale.alias" -delete && \
     rm -r /usr/share/man/* \
           /usr/share/groff/* \
           /usr/share/info/* \
@@ -18,7 +18,9 @@ RUN echo ">>>> Removing files" && \
           /usr/share/pyshared/twisted/test* \
           /usr/lib/python*/dist-packages/twisted/test* \
           /usr/share/pyshared/twisted/*/test* \
-          /usr/lib/python*/dist-packages/twisted/*/test* &&
+          /usr/lib/python*/dist-packages/twisted/*/test* \
+          \
+          /lib/udev/hwdb.bin && \
     \
     echo ">>>> Removing init system" && \
     dpkg --force-remove-essential -r init systemd systemd-sysv sysvinit-core upstart udev && \
