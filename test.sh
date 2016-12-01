@@ -22,7 +22,7 @@ assert_equal() {
 # Tests
 # =================================================================
 test_only_root() {
-    local not_root="$(find / -xdev -not -user root -not -path "$PWD" -print -quit)"
+    local not_root="$(find / -xdev -not -user root -not -path "$PWD" -not -path /var/cache/apt/archives/partial -print -quit)"
     assert_equal "$not_root" '' 'first file not owned by root'
 }
 
