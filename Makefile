@@ -21,7 +21,7 @@ DOCKER_USER         ?= nantesmetropole
 DOCKER_TAG          ?= $(DOCKER_USER)/debian:$(DIST)
 
 
-MKIMAGE = /usr/share/docker.io/contrib/mkimage.sh
+MKIMAGE_SCRIPTDIR = /usr/share/docker.io/contrib/mkimage
 
 default:
 	@echo;\
@@ -30,34 +30,46 @@ default:
 	exit 1
 
 builddir:
-	@if [ -e build ]; then\
+	@if [ -e ./build ]; then\
 	  echo 'WARNING: build directory already exists (run make clean)';\
 	fi
-	mkdir -p build
+	mkdir -p ./build
 
 # Create rootfs.tar.xz
-image-rootfs: builddir
-	mkdir build/rootfs
+image-rootfs-tar: builddir
+	rm -rf ./build/rootfs
+	mkdir ./build/rootfs
 	cp -a templates/etc build/rootfs/
+	grep ^nameserver /etc/resolv.conf | tee build/rootfs/etc/resolv.conf
 	sudo chown -Rc root:root build/rootfs/etc
-	sudo $(MKIMAGE) --dir build --compression xz \
-	  debootstrap "--variant=$(DEBOOTSTRAP_VARIANT)" \
+	sudo $(MKIMAGE_SCRIPTDIR)/debootstrap \
+	  ./build/rootfs \
+	  "--variant=$(DEBOOTSTRAP_VARIANT)" \
 	  --components=main \
-	  --include=inetutils-ping,iproute2 \
+	  --include=locales \
 	  --force-check-gpg \
 	  "$(DIST)" \
 	  "$(DEBOOTSTRAP_MIRROR)"
+	sudo cp ./templates/post-debootstrap.sh ./build/rootfs/post-debootstrap
+	sudo chmod +x ./build/rootfs/post-debootstrap
+	sudo chroot ./build/rootfs/ /post-debootstrap
+	sudo rm ./build/rootfs/post-debootstrap
+	# Docker mounts tmpfs at /dev and procfs at /proc so we can remove them
+	sudo rm -rf "./build/rootfs/dev" "./build/rootfs/proc"
+	sudo mkdir -p "./build/rootfs/dev" "./build/rootfs/proc"
+	sudo tar --numeric-owner --create --auto-compress \
+	  --file "./build/rootfs.tar.xz" \
+	  --directory "./build/rootfs/" \
+	  --transform='s,^./,,' \
+	  .
+	sudo rm -rf ./build/rootfs/
 
 # Create Dockerfile and required files
 image-dockerfile: builddir
-	@diff -u build/Dockerfile templates/Dockerfile ||:
-	rm -f build/Dockerfile
-	cp -a templates/Dockerfile build/Dockerfile
-	# resolv.conf
-	grep ^nameserver /etc/resolv.conf | tee build/resolv.conf
+	cp -a templates/Dockerfile ./build/Dockerfile
 
-image: image-rootfs image-dockerfile
-	docker build -t "$(DOCKER_TAG)" build
+image: image-rootfs-tar image-dockerfile
+	docker build -t "$(DOCKER_TAG)" ./build/
 
 test-local:
 	./test.sh
@@ -66,4 +78,4 @@ test:
 	docker run -t -v "$(CURDIR):$(CURDIR)" -w "$(CURDIR)" "$(DOCKER_TAG)" ./test.sh
 
 clean:
-	rm -rf build
+	rm -rf ./build/
