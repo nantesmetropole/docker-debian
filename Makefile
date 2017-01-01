@@ -1,5 +1,5 @@
 ## @license AGPLv3 <https://www.gnu.org/licenses/agpl-3.0.html>
-## @author Copyright (C) 2016 Mathieu Parent <math.parent@gmail.com>
+## @author Copyright (C) 2016-2017 Mathieu Parent <math.parent@gmail.com>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU Affero General Public License as
