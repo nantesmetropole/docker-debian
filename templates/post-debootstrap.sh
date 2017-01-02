@@ -46,7 +46,7 @@ echo ">>>> Removing files"
 echo ">>>> Removing init system"
 (
     set -x
-    dpkg --force-remove-essential -r \
+    dpkg --force-remove-essential -P \
         init systemd systemd-sysv sysvinit-core upstart udev
 )
 
