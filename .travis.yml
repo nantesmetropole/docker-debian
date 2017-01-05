@@ -1,0 +1,16 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+env:
+    matrix:
+        - DIST=wheezy
+        - DIST=jessie
+        - DIST=stretch
+
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq debootstrap
+script:
+    - make image && make test
