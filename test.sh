@@ -40,6 +40,27 @@ test_lang() {
     assert_equal "$output" '1' 'french'
 }
 
+test_packages() {
+    local pkg
+    local should_not
+    for pkg in $(dpkg-query -Wf '${Package}\n'); do
+        case $pkg in
+            acl|debconf-i18n)
+                should_not="$should_not $pkg"
+            ;;
+            dmsetup|libdevmapper*|libcryptsetup*)
+                should_not="$should_not $pkg"
+            ;;
+            init|systemd|systemd-sysv|sysvinit-core|upstart|udev)
+                should_not="$should_not $pkg"
+            ;;
+            e2fs*)
+                should_not="$should_not $pkg"
+            ;;
+        esac
+    done
+    assert_equal "$should_not" '' 'Packages should not be installed'
+}
 # =================================================================
 # main
 # =================================================================
@@ -48,7 +69,7 @@ check_from_docker || {
     exit 1
 }
 failures=0
-for t in only_root path_exclude tz lang; do
+for t in only_root path_exclude tz lang packages; do
     echo "========================================"
     echo "Test: $t: "
     if "test_$t"; then

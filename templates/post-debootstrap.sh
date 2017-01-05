@@ -52,10 +52,9 @@ echo ">>>> Removing init system"
             e2fsprogs e2fslibs
     elif grep -xFq 'VERSION="8 (jessie)"' /etc/os-release; then # jessie
         dpkg --force-remove-essential -P \
-            debconf-i18n \
+            acl debconf-i18n \
             dmsetup libdevmapper1.02.1 libcryptsetup4 \
             init systemd systemd-sysv sysvinit-core upstart udev \
-            acl \
             e2fsprogs e2fslibs
     else # >= stretch
         dpkg --force-remove-essential -P \
