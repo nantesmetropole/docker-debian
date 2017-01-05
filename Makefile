@@ -14,17 +14,24 @@
 ## You should have received a copy of the GNU Affero General Public License
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-DIST                ?= jessie
-DEBOOTSTRAP_VARIANT ?= minbase
-DEBOOTSTRAP_MIRROR  ?= http://deb.debian.org/debian
-DOCKER_USER         ?= nantesmetropole
-DOCKER_TAG          ?= $(DOCKER_USER)/debian:$(DIST)
+DIST                        ?= jessie
+DEBOOTSTRAP_VARIANT         ?= minbase
+DEBOOTSTRAP_FORCE_GPG_CHECK ?= yes
+DEBOOTSTRAP_MIRROR          ?= http://deb.debian.org/debian
+DOCKER_USER                 ?= nantesmetropole
+DOCKER_TAG                  ?= $(DOCKER_USER)/debian:$(DIST)
 
 
 ifneq ("$(wildcard /usr/share/docker.io/contrib/mkimage)","")
 MKIMAGE_SCRIPTDIR = /usr/share/docker.io/contrib/mkimage
 else
 MKIMAGE_SCRIPTDIR = /usr/share/docker-engine/contrib/mkimage
+endif
+
+ifeq (no, $(DEBOOTSTRAP_FORCE_GPG_CHECK))
+DEBOOTSTRAP_FORCE_GPG_CHECK_OPT=
+else
+DEBOOTSTRAP_FORCE_GPG_CHECK_OPT=--force-check-gpg
 endif
 
 default:
@@ -51,7 +58,7 @@ image-rootfs-tar: builddir
 	  "--variant=$(DEBOOTSTRAP_VARIANT)" \
 	  --components=main \
 	  --include=locales \
-	  --force-check-gpg \
+	  $(DEBOOTSTRAP_FORCE_GPG_CHECK_OPT) \
 	  "$(DIST)" \
 	  "$(DEBOOTSTRAP_MIRROR)"
 	sudo cp ./templates/post-debootstrap.sh ./build/rootfs/post-debootstrap

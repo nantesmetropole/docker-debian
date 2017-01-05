@@ -5,9 +5,9 @@ services:
 
 env:
     matrix:
-        - DIST=wheezy
-        - DIST=jessie
-        - DIST=stretch
+        - DEBOOTSTRAP_FORCE_GPG_CHECK=no DIST=wheezy
+        - DEBOOTSTRAP_FORCE_GPG_CHECK=no DIST=jessie
+        - DEBOOTSTRAP_FORCE_GPG_CHECK=no DIST=stretch
 
 before_install:
     - sudo apt-get update -qq
