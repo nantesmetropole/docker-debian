@@ -46,8 +46,21 @@ echo ">>>> Removing files"
 echo ">>>> Removing init system"
 (
     set -x
-    dpkg --force-remove-essential -P \
-        init systemd systemd-sysv sysvinit-core upstart udev
+    if grep -xFq 'VERSION="7 (wheezy)"' /etc/os-release; then # wheezy
+        dpkg --force-remove-essential -P \
+            debconf-i18n \
+            e2fsprogs e2fslibs
+    elif grep -xFq 'VERSION="8 (jessie)"' /etc/os-release; then # jessie
+        dpkg --force-remove-essential -P \
+            debconf-i18n \
+            dmsetup libdevmapper1.02.1 libcryptsetup4 \
+            init systemd systemd-sysv sysvinit-core upstart udev \
+            acl \
+            e2fsprogs e2fslibs
+    else # >= stretch
+        dpkg --force-remove-essential -P \
+            e2fsprogs e2fslibs
+    fi
 )
 
 echo ">>>> Configuring locales"
