@@ -75,7 +75,11 @@ test-local:
 	./test.sh
 
 test:
-	docker run -t -v "$(CURDIR):$(CURDIR)" -w "$(CURDIR)" "$(DOCKER_TAG)" ./test.sh
+	docker run -t \
+	  -v "$(CURDIR):$(CURDIR)" \
+	  -w "$(CURDIR)" \
+	  --rm \
+	  "$(DOCKER_TAG)" ./test.sh
 
 clean:
 	rm -rf ./build/
