@@ -21,7 +21,11 @@ DOCKER_USER         ?= nantesmetropole
 DOCKER_TAG          ?= $(DOCKER_USER)/debian:$(DIST)
 
 
+ifneq ("$(wildcard /usr/share/docker.io/contrib/mkimage)","")
 MKIMAGE_SCRIPTDIR = /usr/share/docker.io/contrib/mkimage
+else
+MKIMAGE_SCRIPTDIR = /usr/share/docker-engine/contrib/mkimage
+endif
 
 default:
 	@echo;\
