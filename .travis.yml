@@ -12,5 +12,6 @@ env:
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq debootstrap
+    - sudo ln -s sid /usr/share/debootstrap/scripts/stretch # debootstrap too old
 script:
     - make image && make test
