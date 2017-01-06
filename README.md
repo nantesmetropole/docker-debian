@@ -6,7 +6,7 @@ Nantes Métropole's docker-debian
 This is our work-in-progress home-made tooling to create docker images.
 
 Specifics:
-- trimmed (see [here](templates/etc/dpkg/dpkg.cfg.d/01_save-space))
+- trimmed (see [here](templates/etc/dpkg/dpkg.cfg.d/01_save-space) and [here](templates/post-debootstrap.sh))
 - LANG=fr_FR.UTF-8
 - TZ=Europe/Paris
 - Only 1 non-empty layer
