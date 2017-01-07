@@ -44,6 +44,11 @@ test_path_exclude() {
     assert_equal "$path_remaining" '' 'first files excluded from dpkg but found'
 }
 
+test_files() {
+    local files_count="$(ls -d /usr/share/man/man1 /usr/share/man/man2 /usr/share/man/man3 2>/dev/null | wc -l)"
+    assert_equal "$files_count" 3
+}
+
 test_tz() {
     assert_equal "$(date +%Z)" CET TZ
 }
@@ -82,7 +87,7 @@ check_from_docker || {
     exit 1
 }
 failures=0
-for t in only_root path_exclude tz lang packages; do
+for t in only_root path_exclude files tz lang packages; do
     echo "========================================"
     echo "Test: $t: "
     if "test_$t"; then
