@@ -1,7 +1,5 @@
 FROM scratch
 
-MAINTAINER Mathieu Parent <math.parent@gmail.com>
-
 ADD rootfs.tar.xz /
 
 LABEL name="Debian Base Image" \
