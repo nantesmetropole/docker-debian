@@ -86,6 +86,10 @@ check_from_docker || {
     echo "ERROR: Tests should be run from a docker container"
     exit 1
 }
+
+# Show package list
+(set -x; dpkg-query --show)
+
 failures=0
 for t in only_root path_exclude files tz lang packages; do
     echo "========================================"
