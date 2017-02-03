@@ -79,6 +79,9 @@ image-dockerfile: builddir
 image: image-rootfs-tar image-dockerfile
 	docker build -t "$(DOCKER_TAG)" ./build/
 
+push:
+	docker push "$(DOCKER_TAG)"
+
 test-local:
 	./test.sh
 
