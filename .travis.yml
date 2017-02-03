@@ -16,7 +16,7 @@ before_install:
 script:
     - make image && make test
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+  - if [ "$TRAVIS_REPO_SLUG" = nantesmetropole/docker-debian -a "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" = false ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     make push;
     fi
