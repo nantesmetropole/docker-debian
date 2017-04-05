@@ -50,7 +50,11 @@ test_files() {
 }
 
 test_tz() {
-    assert_equal "$(date +%Z)" CET TZ
+    if [ "$(date +%Z)" = 'CEST' ]; then
+        assert_equal "$(date +%Z)" CEST TZ
+    else
+        assert_equal "$(date +%Z)" CET TZ
+    fi
 }
 
 test_lang() {
