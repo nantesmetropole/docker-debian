@@ -19,12 +19,7 @@ DEBOOTSTRAP_MIRROR          ?= http://deb.debian.org/debian
 DOCKER_USER                 ?= nantesmetropole
 DOCKER_TAG                  ?= $(DOCKER_USER)/debian:$(DIST)
 
-
-ifneq ("$(wildcard /usr/share/docker.io/contrib/mkimage)","")
-MKIMAGE_SCRIPTDIR = /usr/share/docker.io/contrib/mkimage
-else
-MKIMAGE_SCRIPTDIR = /usr/share/docker-engine/contrib/mkimage
-endif
+MKIMAGE_SCRIPTDIR = "$(wildcard /usr/share/docker*/contrib/mkimage)"
 
 ifeq (no, $(DEBOOTSTRAP_FORCE_GPG_CHECK))
 DEBOOTSTRAP_FORCE_GPG_CHECK_OPT=
