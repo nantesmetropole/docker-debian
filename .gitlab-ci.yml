@@ -1,0 +1,87 @@
+variables:
+  DOCKER_HOST: "docker"
+
+stages:
+  - build
+  - test
+  - push2registry
+
+# anchors
+.build: &build
+  stage: build
+  tags:
+    - dind
+  script:
+    - JOB_NAME=( $CI_BUILD_NAME )
+    - export DIST=${JOB_NAME[1]}
+    - export DOCKER_TAG="$CI_REGISTRY_IMAGE:$DIST"
+    - apt-get update
+    - apt-get install -y debootstrap eatmydata make sudo xz-utils
+    - export $(apt-config shell apt_acquire_http_proxy Acquire::http::Proxy)
+    - echo $(apt-config shell apt_acquire_http_proxy Acquire::http::Proxy)
+    - eatmydata make image
+    - make save
+  artifacts:
+    name: "$CI_BUILD_NAME"
+    paths:
+      - ./*.tar.xz
+    expire_in: 1 year
+
+.test: &test
+  stage: test
+  tags:
+    - dind
+  script:
+    - JOB_NAME=( $CI_BUILD_NAME )
+    - export DIST=${JOB_NAME[1]}
+    - export DOCKER_TAG="$CI_REGISTRY_IMAGE:$DIST"
+    - apt-get update
+    - apt-get install -y make xz-utils
+    - make load
+    - make test
+
+.push2registry: &push2registry
+  stage: push2registry
+  only:
+    - master@nantes_docker/debian
+  tags:
+    - dind
+  script:
+    - JOB_NAME=( $CI_BUILD_NAME )
+    - export DIST=${JOB_NAME[1]}
+    - export DOCKER_TAG="$CI_REGISTRY_IMAGE:$DIST"
+    - apt-get update
+    - apt-get install -y make xz-utils
+    - make load
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - make push
+
+# build
+build wheezy:
+  <<: *build
+
+build jessie:
+  <<: *build
+
+build stretch:
+  <<: *build
+
+# test
+test wheezy:
+  <<: *test
+
+test jessie:
+  <<: *test
+
+test stretch:
+  <<: *test
+
+# push2registry
+push2registry wheezy:
+  <<: *push2registry
+
+push2registry jessie:
+  <<: *push2registry
+
+push2registry stretch:
+  <<: *push2registry
