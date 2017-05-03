@@ -11,6 +11,33 @@ Specifics:
 - TZ=Europe/Paris
 - Only 1 non-empty layer
 
+Usage
+-----
+
+Images are built weekly with travis, and [pushed to Docker Hub](https://hub.docker.com/r/nantesmetropole/debian/).
+
+    docker pull nantesmetropole/debian:stretch # or jessie or wheezy
+
+We also build them on our local gitlab instance.
+
+
+Build your own
+--------------
+
+Configuration is made using environment variables:
+
+```shell
+# export DIST=jessie
+# export DEBOOTSTRAP_VARIANT=minbase
+# export DEBOOTSTRAP_MIRROR=http://deb.debian.org/debian
+# export DOCKER_USER=nantesmetropole
+# export DOCKER_TAG="$DOCKER_USER/debian:$DIST"
+# export APT_HTTP_PROXY=auto
+
+make image
+make test
+```
+
 License
 -------
 
