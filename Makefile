@@ -44,6 +44,7 @@ image-rootfs-tar: builddir
 	rm -rf ./build/rootfs
 	mkdir ./build/rootfs
 	cp -a templates/etc build/rootfs/
+	grep ^nameserver /etc/resolv.conf | tee build/rootfs/etc/resolv.conf
 	sudo chown -Rc root:root build/rootfs/etc
 	sudo http_proxy=$(apt_acquire_http_proxy) $(MKIMAGE_SCRIPTDIR)/debootstrap \
 	  ./build/rootfs \
