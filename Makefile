@@ -45,7 +45,7 @@ image-rootfs-tar: builddir
 	mkdir ./build/rootfs
 	cp -a templates/etc build/rootfs/
 	sudo chown -Rc root:root build/rootfs/etc
-	sudo $(MKIMAGE_SCRIPTDIR)/debootstrap \
+	sudo http_proxy=$(apt_acquire_http_proxy) $(MKIMAGE_SCRIPTDIR)/debootstrap \
 	  ./build/rootfs \
 	  "--variant=$(DEBOOTSTRAP_VARIANT)" \
 	  --components=main \
@@ -73,6 +73,12 @@ image-dockerfile: builddir
 
 image: image-rootfs-tar image-dockerfile
 	docker build -t "$(DOCKER_TAG)" ./build/
+
+save:
+	docker save "$(DOCKER_TAG)" | xz -0 > $(DIST).tar.xz
+
+load:
+	cat $(DIST).tar.xz | unxz | docker load
 
 push:
 	docker push "$(DOCKER_TAG)"
