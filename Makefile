@@ -74,6 +74,12 @@ image-dockerfile: builddir
 image: image-rootfs-tar image-dockerfile
 	docker build -t "$(DOCKER_TAG)" ./build/
 
+save:
+	docker save "$(DOCKER_TAG)" | xz -0 > $(DIST).tar.xz
+
+load:
+	cat $(DIST).tar.xz | unxz | docker load
+
 push:
 	docker push "$(DOCKER_TAG)"
 
