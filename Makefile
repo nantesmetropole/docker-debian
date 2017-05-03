@@ -18,6 +18,7 @@ DEBOOTSTRAP_FORCE_GPG_CHECK ?= yes
 DEBOOTSTRAP_MIRROR          ?= http://deb.debian.org/debian
 DOCKER_USER                 ?= nantesmetropole
 DOCKER_TAG                  ?= $(DOCKER_USER)/debian:$(DIST)
+APT_HTTP_PROXY              ?= auto
 
 MKIMAGE_SCRIPTDIR = "$(wildcard /usr/share/docker*/contrib/mkimage)"
 
@@ -25,6 +26,14 @@ ifeq (no, $(DEBOOTSTRAP_FORCE_GPG_CHECK))
 DEBOOTSTRAP_FORCE_GPG_CHECK_OPT=
 else
 DEBOOTSTRAP_FORCE_GPG_CHECK_OPT=--force-check-gpg
+endif
+
+ifeq (auto, $(APT_HTTP_PROXY))
+apt_acquire_http_proxy=$(shell apt-config shell http_proxy Acquire::http::Proxy)
+apt_acquire_http_proxy_config=yes
+else
+apt_acquire_http_proxy="http_proxy=$(APT_HTTP_PROXY)"
+apt_acquire_http_proxy_config=no
 endif
 
 default:
@@ -44,8 +53,12 @@ image-rootfs-tar: builddir
 	rm -rf ./build/rootfs
 	mkdir ./build/rootfs
 	cp -a templates/etc build/rootfs/
+	grep ^nameserver /etc/resolv.conf | tee build/rootfs/etc/resolv.conf
+ifeq (yes, $(apt_acquire_http_proxy_config))
+	apt-config dump Acquire::http::Proxy | tee build/rootfs/etc/apt/apt.conf.d/10local-proxy.conf
+endif
 	sudo chown -Rc root:root build/rootfs/etc
-	sudo http_proxy=$(apt_acquire_http_proxy) $(MKIMAGE_SCRIPTDIR)/debootstrap \
+	sudo $(apt_acquire_http_proxy) $(MKIMAGE_SCRIPTDIR)/debootstrap \
 	  ./build/rootfs \
 	  "--variant=$(DEBOOTSTRAP_VARIANT)" \
 	  --components=main \

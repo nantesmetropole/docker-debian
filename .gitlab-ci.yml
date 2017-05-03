@@ -17,8 +17,6 @@ stages:
     - export DOCKER_TAG="$CI_REGISTRY_IMAGE:$DIST"
     - apt-get update
     - apt-get install -y debootstrap eatmydata make sudo xz-utils
-    - export $(apt-config shell apt_acquire_http_proxy Acquire::http::Proxy)
-    - echo $(apt-config shell apt_acquire_http_proxy Acquire::http::Proxy)
     - eatmydata make image
     - make save
   artifacts:
