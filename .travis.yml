@@ -5,13 +5,14 @@ services:
 
 env:
     matrix:
-        - DEBOOTSTRAP_FORCE_GPG_CHECK=no DIST=wheezy
-        - DEBOOTSTRAP_FORCE_GPG_CHECK=no DIST=jessie
-        - DEBOOTSTRAP_FORCE_GPG_CHECK=no DIST=stretch
+        - DIST=wheezy
+        - DIST=jessie
+        - DIST=stretch
 
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq debootstrap
+    - debootstrap --version
 script:
     - make image && make test
 after_success:
